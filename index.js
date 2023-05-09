@@ -3,7 +3,6 @@ const hero = {
   name: 'Wizard',
   avatar: 'images/wizard.png',
   health: 60,
-  diceRoll: [],
   diceCount: 3,
 };
 
@@ -12,7 +11,6 @@ const monster = {
   name: 'Orc',
   avatar: 'images/orc.png',
   health: 10,
-  diceRoll: [],
   diceCount: 1,
 };
 
@@ -22,19 +20,14 @@ function getDiceRollArray(diceCount) {
   });
 }
 
-function getDiceHtml(diceCount) {
-  return getDiceRollArray(diceCount)
-    .map(function (num) {
-      return `<div class="dice">${num}</div>`;
-    })
-    .join('');
-}
+//constructor function serves as template to create multiple objects with similar attributes. Object.Assign(target, source) makes it so that I do not need to write this.property line after line).
+function Character(data) {
+  Object.assign(this, data);
+  this.getCharacterHtml = function () {
+    const { elementId, name, avatar, health, diceCount } = this;
+    let diceHtml = this.getDiceHtml(diceCount);
 
-function renderCharacter(data) {
-  const { elementId, name, avatar, health, diceRoll, diceCount } = data;
-  let diceHtml = getDiceHtml(diceCount);
-
-  document.getElementById(elementId).innerHTML = `
+    return `
         <div class="character-card">
             <h4 class="name"> ${name} </h4>
             <img class="avatar" src="${avatar}" />
@@ -43,7 +36,20 @@ function renderCharacter(data) {
                ${diceHtml}
             </div>
         </div>`;
+  };
+  this.getDiceHtml = function (diceCount) {
+    return getDiceRollArray(diceCount)
+      .map(function (num) {
+        return `<div class="dice">${num}</div>`;
+      })
+      .join('');
+  };
 }
 
-renderCharacter(hero);
-renderCharacter(monster);
+const wizard = new Character(hero);
+const orc = new Character(monster);
+function render() {
+  document.getElementById('hero').innerHTML = wizard.getCharacterHtml();
+  document.getElementById('monster').innerHTML = orc.getCharacterHtml();
+}
+render();
