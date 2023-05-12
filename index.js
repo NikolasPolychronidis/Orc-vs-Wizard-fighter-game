@@ -9,17 +9,21 @@ function getNewMonster() {
 }
 
 function attack() {
-  wizard.getDiceHtml();
-  monster.getDiceHtml();
+  wizard.setDiceHtml();
+  monster.setDiceHtml();
   wizard.takeDamage(monster.currentDiceScore);
   monster.takeDamage(wizard.currentDiceScore);
   render();
   if (wizard.dead) {
     endGame();
   } else if (monster.dead) {
+    document.getElementById('attack-button').style.display = 'none';
     if (monstersArray.length > 0) {
-      monster = getNewMonster();
-      render();
+      setTimeout(() => {
+        monster = getNewMonster();
+        document.getElementById('attack-button').style.display = 'inline-block';
+        render();
+      }, 1500);
     } else {
       endGame();
     }
@@ -35,13 +39,15 @@ function endGame() {
       : 'The Monster is Victorious';
 
   const endEmoji = wizard.health > 0 ? '🔮' : '☠️';
-  document.body.innerHTML = `
+  setTimeout(() => {
+    document.body.innerHTML = `
                 <div class="end-game">
                     <h2>Game Over</h2> 
                     <h3>${endMessage}</h3>
                     <p class="end-emoji">${endEmoji}</p>
                 </div>
                 `;
+  });
 }
 
 document.getElementById('attack-button').addEventListener('click', attack);
